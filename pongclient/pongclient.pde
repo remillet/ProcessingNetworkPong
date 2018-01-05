@@ -24,7 +24,6 @@ float[] data; // parsed version of input from perspective of this client (myPadd
 // format: Paddle1Y,Paddle2Y,ballX,ballY,ballXSpeed,ballYSpeed
 
 int plNum; // playerNum is either 1 or 2. The server picks this and sends it at start of game
-int count = 0;
 int ballSize;
 float ballX, ballY;
 float ballSpeedX, ballSpeedY;
@@ -90,16 +89,12 @@ void getDataFromServer()
 {
   if (client.available() > 0)
   {
-    count++;
     input = client.readStringUntil('\n');
-    //print("count: " + count + "   input: " + input);
-    //println("char1: " + input.charAt(1) + "    plNum: " + plNum + "\n");
     if (input != null)
     {
       if (input.charAt(1) == '1' && plNum == 0)
       {
         plNum = 1;
-        //println("PlayerNum: " + plNum);
       } else if (input.charAt(0) == 'y')
       {
         readyToPlay = true;
