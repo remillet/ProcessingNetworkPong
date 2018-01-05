@@ -1,48 +1,42 @@
 import processing.net.*;
 
 Server server;
-float newMessageColor;
-String incomingMessage;
+int numPlayers = 0;
+boolean startMsgSent = false;
 
 void setup()
 {
-  size(400, 200);
+  size(200, 200);
   server = new Server(this, 5204);
-  newMessageColor = 255;
-  incomingMessage = "";
 }
 
 void draw()
 {
-  background(newMessageColor);
-
-  // newMessageColor fades to white over time
-  newMessageColor = constrain(newMessageColor + 0.3f, 0, 255);
-  textAlign(CENTER);
-  fill(255);
-  text(incomingMessage, width/2, height/2);
-
-  // If there is no client, client will be null
-  Client client = server.available();
-  if (client != null)
+  if (!startMsgSent && numPlayers == 2)
   {
-    // Receive the message
-    incomingMessage = client.readString();
-    incomingMessage = incomingMessage.trim();
-
-    // Print to Processing message window
-    System.out.println("Client says: " + incomingMessage);
-
-    // Write message back out (note this goes to ALL clients)
-    server.write("How does " + incomingMessage + " make you feel?\n");
-    newMessageColor = 0;
+    server.write("y\n");
+    startMsgSent = true;
+  } else if (numPlayers >= 2)
+  {
+    // If there is no client, client will be null
+    Client client = server.available();
+    if (client != null)
+    {
+      String input = client.readStringUntil('\n');
+      if (input != null)
+      {
+        server.write(input);
+      }
+    }
   }
 }
 
 // The serverEvent function is called whenever a new client connects.
 void serverEvent(Server server, Client client)
 {
-  incomingMessage = "A new client has connected: " + client.ip();
-  System.out.println(incomingMessage);
-  newMessageColor = 0;
+  if (numPlayers == 0)
+  {
+     server.write("n1\n");  // code for 1st player to login to set playerNum to 1
+  }
+  numPlayers++;
 }
