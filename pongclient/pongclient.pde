@@ -23,7 +23,7 @@ String input; // format: "recentHit,paddle1Y,paddle2Y,ballX,ballY,ballXSpeed,bal
 float[] data; // parsed version of input from perspective of this client (myPaddle):
 // format: Paddle1Y,Paddle2Y,ballX,ballY,ballXSpeed,ballYSpeed
 
-int plNum; // playerNum is either 1 or 2. The server picks this and sends it at start of game
+int plNum; // playerNum is either 1 or 2. The server helps pick this at start of game
 int ballSize;
 float ballX, ballY;
 float ballSpeedX, ballSpeedY;
@@ -178,8 +178,8 @@ void updateMyPaddle()
 void advanceBall()
 {
   if (recentOpponentHit > 0)  // Don't know if this hit counter is needed;
-  {                           // An attempt to make sure that your load opponent's version of data
-    ballX = data[2];          // after they get a hit
+  {                           // An attempt to make sure that you load opponent's version of data
+    ballX = data[2];          // after they get a hit, since that is more precise than your local data
     ballY = data[3];
     ballSpeedX = data[4];
     ballSpeedY = data[5];
@@ -230,12 +230,12 @@ void advanceBall()
               ballSpeedY = -ballSpeedY + 2 * (myPaddleY - myPrevPaddleY);
             }
           }
-        } else
+        } else  // paddle not vertically aligned with ball position
         {
           missed = true;
         }
       }
-    } else
+    } else  // plNum == 2
     {
       if (ballX >= p2Edge - ballSize/2)
       {
@@ -269,7 +269,7 @@ void advanceBall()
               ballSpeedY = -ballSpeedY + 2 * (myPaddleY - myPrevPaddleY);
             }
           }
-        } else
+        } else  // paddle not vertically aligned with ball
         {
           missed = true;
         }
@@ -307,6 +307,7 @@ void writeDataToServer()
 
     if (offScreen())
     {
+      // Launch new ball
       output += "1,";  // sends "recentHit" code to opponent so that their display updates
       knocked = false;
       missed = false;

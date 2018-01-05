@@ -51,7 +51,7 @@ void serverEvent(Server server, Client client)
 {
   if (numPlayers == 0)
   {
-     server.write("n1\n");  // code for 1st player to login to set playerNum to 1
+     server.write("n1\n");  // code after 1st player logs in to set playerNum to 1
   }
   numPlayers++;
 }
